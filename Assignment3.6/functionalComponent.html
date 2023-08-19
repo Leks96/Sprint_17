@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    	<meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="style.css">
+	<title>Document</title>
+</head>
+<body>
+	<script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    	<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+
+	<div id="root"></div>
+
+	<script>
+		class Book {
+			constructor (title, author) {
+				this.title = title;
+				this.author = author;
+			}
+
+			toString(){
+				return `${this.title}, by ${this.author}`;
+			}
+		}
+
+		class Film {
+	            	constructor (name, genre, blurb) {
+				this.name = name;
+				this.genre = genre;
+				this.blurb = blurb;
+			}
+
+			toString() {
+				return `${this.name} [${this.genre}], ${this.blurb}`;
+			}
+		}
+
+		const book = [
+			new Book("Millenium", "Stieg Larsson"),
+			new Book("A Christmas Carol", "Charles Dickens"),
+			new Book("The Son", "Jo Nesbo"),
+		]
+
+		const film = [
+			new Film("Airplane", "Comedy", "Classic plane spoof"),
+			new Film("Skyfall", "Adventure", "Bond spy yarn"),
+			new Film("Love Actually", "RomCom", " Hugh Grant playing Hugh Grant"),
+			new Film("Mission Impossible", "Adventure", " Hi-octane stunt fest")
+		]
+
+		function ItemsList (props) {
+			render(){
+			const elem = props.ordered ? 'ol': 'ul';
+			return React.createElement(
+				elem,
+				null,
+				props.items.map((item, i) => 
+				React.createElement('li', { key: i }, item.toString())
+					)
+				);
+			}
+		}
+
+        	function Table(props) {
+			render(){
+			return React.createElement(
+				'table',
+				null,
+				React.createElement(TableHead, {
+					sampleObject: props.items[0],
+				}),
+				React.createElement(TableBody, { objects: props.items })
+				);
+			}
+		}
+
+		function TableHead(props) {
+			render(){
+			return React.createElement(
+				'thead',
+				null,
+				React.createElement(TableRow, {
+					data: Object.keys(props.sampleObject), head: true,
+					})
+				);
+			}
+		}
+
+        	function TableBody(props) {
+			render(){
+			return React.createElement(
+				'tbody',
+				null,
+				props.objects.map((obj, i) => 
+					React.createElement(TableRow, {
+						key: i,
+						data: Object.values(obj),
+						head: false
+						})
+					)
+				);
+			}
+		}
+
+		function TableRow(props) {
+			render(){
+			const elem = props.head ? 'th': 'td';
+			return React.createElement(
+				'tr',
+				null,
+				props.data.map((d, i) => 
+					React.createElement(elem, { key: i }, d)
+					)
+				);
+			}
+		}
+
+		const library = React.createElement(
+			'div',
+			null,
+			React.createElement('h1', null, 'My Library'),
+			React.createElement('h2', null, 'Books'),
+			React.createElement(ItemsList, { items: book, ordered: true }, null),
+			React.createElement("h2", null, "Films list"),
+			React.createElement(ItemsList, { items: film }, null),
+			React.createElement("h2", null, "Books table"),
+			React.createElement(Table, { items: book }, null),
+			React.createElement("h2", null, "Films table"),
+			React.createElement(Table, { items: film }, null)
+		);
+
+		ReactDOM.render(library, document.getElementById('root'));
+
+	</script>
+</body>
+</html>
