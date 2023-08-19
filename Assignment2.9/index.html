@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+	<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+
+	<div id="root"></div>
+
+	<script>
+		class Book {
+			constructor (title, author) {
+				this.title = title;
+				this.author = author;
+			}
+
+			toString(){
+				return `${this.title}, by ${this.author}`;
+			}
+		}
+		class Film {
+	            	constructor (name, genre, blurb) {
+				this.name = name;
+				this.genre = genre;
+				this.blurb = blurb;
+			}
+
+		        toString() {
+				return `${this.name} [${this.genre}], ${this.blurb}`;
+							            }
+			}
+
+		const book = [
+	            	new Book("Millenium", "Stieg Larsson"),
+		        new Book("A Christmas Carol", "Charles Dickens"),
+			new Book("The Son", "Jo Nesbo"),
+		]
+
+		const film = [
+			new Film("Airplane", "Comedy", "Classic plane spoof"),
+			new Film("Skyfall", "Adventure", "Bond spy yarn"),
+			new Film("Love Actually", "RomCom", " Hugh Grant playing Hugh Grant"),
+		]
+
+		const bookList = React.createElement(
+			'ul',
+			null,
+			book.map((b, i) => React.createElement('li', { key: i, title: b.toString() }, b.title)
+			)
+		);
+
+		const filmList = React.createElement(
+			'ul',
+			null,
+			film.map((f, i) => React.createElement('li', { key: i, title: f.toString() }, f.name)
+			)
+		);
+
+		const library = React.createElement(
+			'div',
+			null,
+			React.createElement('h1', null, 'My Library'),
+			React.createElement('h2', null, 'Books'),
+			bookList,
+			React.createElement('h2', null, 'Films'),
+			filmList
+		);
+
+		ReactDOM.render(library, document.getElementById('root'));
+
+	</script>
+</body>
+</html>
