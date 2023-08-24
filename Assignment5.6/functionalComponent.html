@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.js"></script>
+    <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        class Book {
+            constructor (title, author) {
+                this.title = title;
+                this.author = author;
+            }
+
+            toString(){
+                return `${this.title}, by ${this.author}`;
+            }
+        }
+
+        class Film {
+            constructor (name, genre, blurb) {
+                this.name = name;
+                this.genre = genre;
+                this.blurb = blurb;
+            }
+
+            toString() {
+                return `${this.name} [${this.genre}], ${this.blurb}`;
+            }
+        }
+
+        const book = [
+            new Book("Millenium", "Stieg Larsson"),
+            new Book("A Christmas Carol", "Charles Dickens"),
+            new Book("The Son", "Jo Nesbo"),
+        ]
+
+        const film = [
+            new Film("Airplane", "Comedy", "Classic plane spoof"),
+            new Film("Skyfall", "Adventure", "Bond spy yarn"),
+            new Film("Love Actually", "RomCom", " Hugh Grant playing Hugh Grant"),
+            new Film("Mission Impossible", "Adventure", " Hi-octane stunt fest")
+        ]
+        
+        function Library ({book, film, tableFormat = false}) {
+            if(tableFormat){
+                return (
+                    <div> 
+                        <h1>My Library</h1>
+                        <h2>Books</h2>
+                        <Table items={book}/>
+                        <h2>Films</h2>
+                        <Table items={film}/>
+                        <LikePanel />
+                    </div>
+                );
+            } else {
+                return (
+                    <div>
+                        <h1>My Library</h1>
+                        <h2>Books</h2>
+                        <ItemList items={book} ordered={true} />
+                        <h2>Films</h2>
+                        <ItemList items={film}/>
+                        <LikePanel />
+                    </div>
+                );
+            }
+        }
+
+        Library.propTypes = {
+            book: PropTypes.array.isRequired,
+            film: PropTypes.array.isRequired,
+            tableFormat: PropTypes.bool,
+        };  
+
+        function LikePanel() {
+            const [likeState, setLikeState] = React.useState ({
+                likes: 0,
+            });
+
+            function onLike(){
+                setLikeState({
+                    likes: likeState.likes + 1,
+                });
+            }
+
+            function onReset(){
+                setLikeState({
+                    likes: 0,
+                });
+            }
+
+            return (
+                <div className='likePanel'>
+                    <h2>Like my Library</h2>
+                    <span>
+                        Likes: <b>{likeState.likes}</b>
+                    </span>
+                    &nbsp;
+                    <button onClick={() => onLike()}>Like</button>
+                    <button onClick={() => onReset()}>Reset Like</button>
+                </div>
+            );
+        }
+
+        function ItemList ({items = [], ordered = false}){
+            if (items.length == 0){
+                return <div>[No items listed]</div>
+            } else {
+                const ListTag = ordered? 'ol': 'ul';
+                return (
+                    <ListTag>
+                        {items.map((item, i)  => (
+                            <li key={i}>{item.toString()}</li>
+                        ))}
+                    </ListTag>
+                );
+            }
+        }
+
+        ItemList.propTypes = {
+            items: PropTypes.array,
+            ordered: PropTypes.bool
+        }
+
+        function Table({items = []}) {
+            if (items.length == 0){
+                return <div>[No items to display]</div>
+            } else {
+                return (
+                <table>
+                    <TableHead sampleObject={items[0]} />
+                    <TableBody objects={items} />
+                </table>
+                )
+            }
+        }
+
+        Table.propTypes = {
+            items: PropTypes.array
+        }
+
+        function TableHead({sampleObject}){
+            return (
+                <thead>
+                    <TableRow data={Object.keys(sampleObject)} head={true} />
+                </thead>
+            );
+        }
+
+        TableHead.propTypes = {
+            sampleObject: PropTypes.object.isRequired
+        }
+
+        function TableBody({objects}){
+            return (
+                <tbody>
+                    {objects.map((obj, i) => 
+                        <TableRow key={i} data={Object.values(obj)} />    
+                    )}
+                </tbody>
+            );
+        }
+
+        TableBody.propTypes = {
+            objects: PropTypes.array.isRequired
+        }
+
+        function TableRow({data, head = true}){
+            const CellTag = head ? 'th' : 'td';
+            return (
+                <tr>
+                    {data.map((d, i) => (
+                        <CellTag key={i}>{d}</CellTag>
+                    ))}
+                </tr>
+            );
+        }
+
+        TableRow.propTypes = {
+            data: PropTypes.array.isRequired,
+            head: PropTypes.bool
+        }
+
+        ReactDOM.render(
+            <Library book={book} film={film} tableFormat={true} />,
+            document.getElementById('root')
+        );
+
+    </script>
+</body>
+</html>

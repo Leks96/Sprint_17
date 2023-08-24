@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://unpkg.com/prop-types@15.8.1/prop-types.js"></script>
+    <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        class Book {
+            constructor (title, author) {
+                this.title = title;
+                this.author = author;
+            }
+
+            toString(){
+                return `${this.title}, by ${this.author}`;
+            }
+        }
+
+        class Film {
+            constructor (name, genre, blurb) {
+                this.name = name;
+                this.genre = genre;
+                this.blurb = blurb;
+            }
+
+            toString() {
+                return `${this.name} [${this.genre}], ${this.blurb}`;
+            }
+        }
+
+        const book = [
+            new Book("Millenium", "Stieg Larsson"),
+            new Book("A Christmas Carol", "Charles Dickens"),
+            new Book("The Son", "Jo Nesbo"),
+        ]
+
+        const film = [
+            new Film("Airplane", "Comedy", "Classic plane spoof"),
+            new Film("Skyfall", "Adventure", "Bond spy yarn"),
+            new Film("Love Actually", "RomCom", " Hugh Grant playing Hugh Grant"),
+            new Film("Mission Impossible", "Adventure", " Hi-octane stunt fest")
+        ]
+
+        class Library extends React.Component {
+            static propTypes = {
+                book: PropTypes.array.isRequired,
+                film: PropTypes.array.isRequired,
+                tableFormat: PropTypes.bool,
+            }
+
+            static defaultProps = {
+                tableFormat: false,
+            }
+
+            render () {
+                if (this.props.tableFormat){
+                    return (
+                        <div>
+                            <h1>My Library</h1>
+                            <h2>Books</h2>
+                            <Table items={this.props.book} />
+                            <h2>Films</h2>
+                            <Table items={this.props.film} />
+                            <LikePanel />
+                        </div>
+                    );
+                } else {
+                    return(
+                        <div>
+                            <h1>My Library</h1>
+                            <h2>Books</h2>
+                            <ItemsList items={this.props.book} />
+                            <h2>Films</h2>
+                            <ItemsList items={this.props.film} />
+                            <LikePanel />
+                        </div> 
+                    );
+                }
+            }
+        }
+
+        class LikePanel extends React.Component {
+            constructor(props){
+                super(props);
+                this.state = {
+                    likes: 0
+                };
+            }
+
+            onLike(){
+                this.setState({
+                    likes: this.state.likes + 1,
+                });
+            }
+
+            onReset(){
+                this.setState({
+                    likes: 0
+                });
+            }
+
+            render() {
+                return (
+                    <div className="likePanel">
+                        <h2>Like My Panel</h2>
+                        <span>
+                            Likes: <b>{this.state.likes}</b>
+                        </span>
+                        &nbsp;
+                        <button onClick={()=> this.onLike()}>Like</button>
+                        <button onClick={()=> this.onReset()}>Reset Like</button>
+                    </div>
+                );
+            }
+        }
+        
+        class ItemList extends React.Component{
+            static propTypes = {
+                item: PropTypes.array,
+                ordered: PropTypes.bool
+            };
+
+            static defaultProps = {
+                items: [],
+                ordered: false,
+            };
+
+            render() {
+                if (this.props.items.length == 0){
+                    return <div>[No Items to Display]</div>
+                } else {
+                    const ListTag = this.props.ordered ? 'ol' : 'ul'
+                    return (
+                        <ListTag>
+                            {this.props.items.map((item, i) => (
+                                <li key={i}>{item.toString()}</li>    
+                        ))}    
+                        </ListTag>
+                    )
+                }
+            }
+        }
+
+        class Table extends React.Component {
+            static propTypes = {
+                items: PropTypes.array
+            }
+
+            static defaultProps = {
+                items: []
+            }
+            render(){
+                if (this.props.items.length == 0){
+                    return <div>[No items to Display]</div>
+                } else {
+                    return (
+                    <table>
+                    <TableHead sampleObject={this.props.items[0]} />
+                    <TableBody objects={this.props.items} />
+                    </table>
+                    );
+                }
+            }
+        }
+
+        class TableHead extends React.Component {
+            static propTypes = {
+                sampleObject: PropTypes.object.isRequired
+            }
+            render(){
+                return (
+                    <thead>
+                    <TableRow data={Object.keys(this.props.sampleObject)} head={true} />
+                    </thead>
+                );
+            }
+        }
+
+        class TableBody extends React.Component {
+            render(){
+                return (
+                    <tbody>
+                    {this.props.objects.map((obj, i) => 
+                        <TableRow key={i} data={Object.values(obj)} head={false} />
+                    )}
+                    </tbody>
+                );
+            }
+        }
+
+        class TableRow extends React.Component {
+            render(){
+                const CellTag = this.props.head ? 'th': 'td';
+                return (
+                    <tr>
+                    {this.props.data.map((d, i) => ( 
+                        <CellTag key={i}>{d}</CellTag>
+                    ))}
+                    </tr>
+                );
+            }
+        }
+
+        ReactDOM.render(
+            <Library  book={book} film={film} tableFormat={true} />,
+            document.getElementById('root')
+            );
+    </script>
+</body>
+</html>
